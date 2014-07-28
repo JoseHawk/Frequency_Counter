@@ -1,0 +1,46 @@
+--------------------------------------------------------------------------------------
+Timing Analyzer Summary
+--------------------------------------------------------------------------------------
+
+Type           : Worst-case tco
+Slack          : N/A
+Required Time  : None
+Actual Time    : 86.300 ns
+From           : salida[4]
+To             : unidadesDisplay[0]
+From Clock     : reloj
+To Clock       : --
+Failed Paths   : 0
+
+Type           : Clock Setup: 'reloj'
+Slack          : N/A
+Required Time  : None
+Actual Time    : 39.37 MHz ( period = 25.400 ns )
+From           : lpm_counter:pulsosReloj_rtl_1|alt_counter_f10ke:wysi_counter|counter_cell[1]
+To             : lpm_counter:pulsosReloj_rtl_1|alt_counter_f10ke:wysi_counter|counter_cell[9]
+From Clock     : reloj
+To Clock       : reloj
+Failed Paths   : 0
+
+Type           : Clock Setup: 'senialGenerador'
+Slack          : N/A
+Required Time  : None
+Actual Time    : Restricted to 125.00 MHz ( period = 8.000 ns )
+From           : lpm_counter:pulsosSenial_rtl_0|alt_counter_f10ke:wysi_counter|counter_cell[0]
+To             : lpm_counter:pulsosSenial_rtl_0|alt_counter_f10ke:wysi_counter|counter_cell[6]
+From Clock     : senialGenerador
+To Clock       : senialGenerador
+Failed Paths   : 0
+
+Type           : Total number of failed paths
+Slack          : 
+Required Time  : 
+Actual Time    : 
+From           : 
+To             : 
+From Clock     : 
+To Clock       : 
+Failed Paths   : 0
+
+--------------------------------------------------------------------------------------
+

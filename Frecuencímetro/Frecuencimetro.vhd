@@ -1,0 +1,120 @@
+-- FRECUENCIMETRO
+
+-- Librerias necesarias
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_arith.ALL;
+
+-- Definimos la entidad
+ENTITY Frecuencimetro IS
+		
+		PORT(
+		
+			reloj : IN STD_LOGIC;								-- Reloj interno de la placa
+			senialGenerador : IN STD_LOGIC;						-- Senial introducida por el generador
+			decenasDisplay : OUT STD_LOGIC_VECTOR (6 DOWNTO 0); -- Valor de las decenas a mostrar en el display
+			unidadesDisplay: OUT STD_LOGIC_VECTOR (6 DOWNTO 0)  -- Valor de las unidades a mostrar en el display
+			
+		);
+			
+END Frecuencimetro;
+
+-- Definimos la arquitectura
+ARCHITECTURE arquitecturaFrecuencimetro OF Frecuencimetro IS
+
+	SIGNAL salida : INTEGER RANGE 0 TO 90;			-- En esta senial guardaremos el valor del numero de pulsos de la senial para mostrar dicho resultado
+	SIGNAL unidades : INTEGER RANGE 0 TO 9;			-- Valor de las unidades
+	SIGNAL decenas : INTEGER RANGE 0 TO 9;			-- Valor de las decenas
+	SIGNAL pulsosReloj : INTEGER RANGE 0 TO 26000;	-- Contamos los pulsos de nuestra senial de reloj
+	SIGNAL pulsosSenial : INTEGER RANGE 0 TO 99;	-- Contamos los pulsos de la senial introducida
+	SIGNAL flag : std_logic:='0';					-- Marca utilizada para reiniciar los pulso de la senial
+	
+	-- Instanciamos el codificador de 7 segmentos para la representacion mediante display
+	COMPONENT codificador7Segmentos
+	
+		PORT(
+			
+			entrada : IN INTEGER RANGE 0 TO 9;
+			salida  : OUT STD_LOGIC_VECTOR (6 DOWNTO 0)
+		
+		);
+			
+	END COMPONENT;
+
+		
+	BEGIN
+		
+		-- Proceso que cuenta el numero de pulsos que da el reloj. Cuando llegue a 25175 (ya que la frecuencia es de
+		-- 25'175 MHz = 25175000 pulsos por segundo) es que ha pasado un segundo. Por tanto mostramos los pulsos que ha dado
+		-- nuestra senial hasta entonces (en KHz)
+		cuantificadorReloj : PROCESS (reloj)
+		
+		BEGIN
+		
+			IF (reloj'EVENT AND reloj= '1') THEN
+		
+					pulsosReloj <= pulsosReloj + 1;
+					flag <= '0';
+					
+				IF (pulsosReloj >= 25175) THEN
+					flag <= '1';
+					salida <= pulsosSenial;
+					pulsosReloj <= 0;
+					
+				END IF;
+				
+			END IF;
+			
+		END PROCESS cuantificadorReloj;
+	
+		-- Proceso que cuenta el numero de pulsos que da la senial del generador en un segundo. Obtenemos asi su frecuencia
+		cuantificadorGenerador : PROCESS (flag, senialGenerador)
+		
+		BEGIN
+		
+			IF flag = '1' THEN
+			   
+			   pulsosSenial <= 0;
+			   
+			else
+		
+				IF (senialGenerador'EVENT AND senialGenerador = '1') THEN
+		
+					pulsosSenial <= pulsosSenial + 1;
+					
+				END IF;
+				
+			END IF;
+			
+		END PROCESS cuantificadorGenerador;
+		
+		
+		-- Proceso para obtener el valor de la frecuencia de la senial a partir del numero de pulsos obtenidos de esta
+		-- Como sabemos que se movera el valor entre los 1-90 KHz, en el primer display mostraremos las unidades en KHz y en el segundo las decenas en KHz
+		valoresDisplays : PROCESS (salida)
+		
+		BEGIN
+		
+			decenas <= (salida/10);									-- Obtenemos las decenas
+			unidades <= salida - decenas*10;						-- Obtenemos las unidades
+			
+		
+		END PROCESS valoresDisplays;
+		
+		-- Codificamos para mostrar por el display de 7 segmentos las unidades
+		mostrarUnidadesDisplay : codificador7Segmentos PORT MAP(
+		
+			entrada => unidades,
+			salida => unidadesDisplay
+				
+		);
+		
+		-- Codificamos para mostrar por el display de 7 segmenos las decenas
+		mostrarDecenasDisplay : codificador7Segmentos PORT MAP(
+				
+			entrada => decenas,
+			salida => decenasDisplay
+				
+		);
+		
+END arquitecturaFrecuencimetro;

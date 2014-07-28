@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<LOG_ROOT>
+	<PROJECT NAME="Frecuencimetro">
+		<CBX_INST_ENTRY INSTANCE_NAME="|Frecuencimetro|lpm_divide:Div0" CBX_FILE_NAME="lpm_divide_h1m.tdf"/>
+	</PROJECT>
+</LOG_ROOT>
